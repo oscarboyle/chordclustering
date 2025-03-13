@@ -2,6 +2,7 @@ import numpy as np
 from numba import jit
 import matplotlib.pyplot as plt
 import librosa
+from scipy.spatial.distance import cosine
 
 
 @jit(nopython=True)
@@ -110,11 +111,54 @@ def compute_chromagram(Y_LF):
     return C
 
 def chromagram(wavfile, fs, N, H):
+    """
+    End to end computation of chromagram using a given audio file.
+
+    Args:
+        wavfile (str): Path to the audio file.
+        fs (int): Sampling rate.
+        N (int): Window size of Fourier fransform.
+        H (int): Hopsize.
+
+    Returns:
+        chroma (np.ndarray): A (12, T) chromagram matrix (12 pitch classes x time frames).
+
+    """
     x, _ = librosa.load(wavfile, sr=fs)
     Y ,_,_= compute_spectrogram(x, fs, N, H,mag=True)
     Y_LF, _ = compute_spec_log_freq(Y, fs, N)  
     chroma = compute_chromagram(Y_LF)
     return chroma
+
+
+# Based on cosine similarity, maybe a faster approach could be possible
+def chromaOnsets(chromagram, threshold=0.3):
+    """
+    Detects chord changes in a chromagram based on cosine similarity.
+    
+    Parameters:
+    chromagram (np.ndarray): A (12, T) chromagram matrix (12 pitch classes x time frames).
+    threshold (float): Cosine distance threshold to detect a change.
+    
+    Returns:
+    List[int]: Indices of time frames where a chord change is detected.
+    """
+    changes = []
+    num_frames = chromagram.shape[1]
+    
+    for t in range(1, num_frames):
+        prev_vector = chromagram[:, t - 1]
+        curr_vector = chromagram[:, t]
+        
+        if np.linalg.norm(prev_vector) == 0 or np.linalg.norm(curr_vector) == 0:
+            continue  # Avoid division by zero if there's silence
+        
+        distance = cosine(prev_vector, curr_vector)
+        
+        if distance > threshold:
+            changes.append(t)
+    
+    return changes
 
 if __name__ == '__main__':
     wavfile = "/home/usuari/Desktop/SMC-Master/MIR/FINALPROJECT/MajorChords-Flute.wav"
@@ -125,17 +169,24 @@ if __name__ == '__main__':
     H = 1024
     chroma = chromagram(wavfile, fs, N, H)
 
+    changes = chromaOnsets(chroma)
+
     eps = np.finfo(float).eps
 
     fig = plt.figure(figsize=(10, 3))
     chroma_label = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-    plt.imshow(10 * np.log10(eps + chroma), origin='lower', aspect='auto', cmap='gray_r',
-            )
+    plt.imshow(10 * np.log10(eps + chroma), origin='lower', aspect='auto', cmap='gray_r')
     plt.clim([0, 60])
     plt.xlabel('Time (seconds)')
     plt.ylabel('Chroma')
     cbar = plt.colorbar()
     cbar.set_label('Magnitude (dB)')
     plt.yticks(np.arange(12) + 0.5, chroma_label)
+    
+    # Add vertical bars at detected change points
+    for change in changes:
+        plt.axvline(x=change, color='r', linestyle='--', linewidth=1)
+    
     plt.tight_layout()
     plt.show()
+    print(chroma.shape)
