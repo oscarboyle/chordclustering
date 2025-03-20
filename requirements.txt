@@ -1,3 +1,7 @@
 librosa
-numba
 matplotlib
+midi2audio
+music21
+numba
+pandas
+seaborn

@@ -14,3 +14,4 @@ chromagrams.json is already computed for testing if not:
 - Download wav files you want to process and add them to selected folder in _dataProcessing.py_ 
 - Run _dataProcessing.py_ 
 - Visualize in testing.ipynb
+- Download a soundfont to generate the chords using "wget ftp://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf2"
