@@ -78,4 +78,63 @@ if __name__ == '__main__':
     print(chroma.shape)
 
 
+def build_chord_templates():
+    """
+    Build a dictionary of chord templates for major and minor triads
+    across all roots (12 semitones).
+    
+    Returns:
+        chord_templates (dict): keys = chord name (str),
+                                values = 12D numpy array
+    """
+    # For convenience, we index pitch classes as:
+    # C=0, C#=1, D=2, D#=3, E=4, F=5,
+    # F#=6, G=7, G#=8, A=9, A#=10, B=11
+    # major triad = [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0] (root, major 3rd, perfect 5th)
+    # minor triad = [1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0] but with a flat 3rd
+
+    # base major triad starting at C
+    major_base = np.zeros(12)
+    major_base[0] = 1   # root
+    major_base[4] = 1   # major 3rd
+    major_base[7] = 1   # perfect 5th
+    
+    # base minor triad starting at C
+    minor_base = np.zeros(12)
+    minor_base[0] = 1   # root
+    minor_base[3] = 1   # minor 3rd
+    minor_base[7] = 1   # perfect 5th
+
+    # base diminished triad starting at C
+    diminished_base = np.zeros(12)
+    diminished_base[0] = 1   # root
+    diminished_base[3] = 1   # minor 3rd
+    diminished_base[6] = 1   # diminished 5th
+
+    # base augmented triad starting at C
+    augmented_base = np.zeros(12)
+    augmented_base[0] = 1   # root
+    augmented_base[4] = 1   # major 3rd
+    augmented_base[8] = 1   # augmented 5th
+
+    chord_templates = {}
+    note_names = ['C', 'C#', 'D', 'Eb', 'E', 
+                  'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
+    
+    # Construct major/minor templates for all 12 possible roots
+    for root in range(12):
+        # Rotate the base pattern by 'root' semitones
+        major_pattern = np.roll(major_base, root)
+        minor_pattern = np.roll(minor_base, root)
+        diminished_pattern = np.roll(diminished_base, root)
+        augmented_pattern = np.roll(augmented_base, root)
+
+        # Name the chord e.g. "C Maj", "C# Maj", ... "C Min", ...
+        chord_templates[f"{note_names[root]}_Major"] = major_pattern
+        chord_templates[f"{note_names[root]}_Minor"] = minor_pattern
+        chord_templates[f"{note_names[root]}_Diminished"] = diminished_pattern
+        chord_templates[f"{note_names[root]}_Augmented"] = augmented_pattern
+    
+    return chord_templates
+
 
