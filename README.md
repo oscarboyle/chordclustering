@@ -1,17 +1,17 @@
 # chordclustering
+
 MIR final project: chord classification using semisupervised clustering
 
+## Overview
 
-### Modules
+This repository investigates unsupervised approaches to chord recognition by directly learning harmonic structures from audio without extensive reliance on annotated data. We extract chroma features using a deep learning-based method and apply Gaussian Mixture Models to cluster these high-dimensional representations. The resultant clusters are analyzed both quantitatively—using metrics such as the Adjusted Rand Index, Normalized Mutual Information, and Fowlkes-Mallows Index—and qualitatively through t-SNE visualizations that reveal the underlying organization of chord spaces. Comparative evaluation against a supervised Random Forest baseline highlights that while unsupervised clustering can capture essential harmonic characteristics, its performance deteriorates in scenarios involving diverse chord types, inversions, and instrument timbres. These findings underscore the promise and limitations of unsupervised strategies in chord recognition, suggesting that further integration of invariance principles may enhance their applicability in low-annotation settings.
 
-- *featureExtraction*: contains the functions to compute chromagram and chromagram onsets using cosine similarity
-- *dataProcessing*: reads all .wav files from selected folder and computes their chromagram, if SEPARATE_CHORDS=True, computes separates the chromagram into separate chords
-- *testing.ipynb*: for visualizing chromagrams
+## Experiments
 
-### How to run
-chromagrams.json is already computed for testing if not:
+Three experiments have been run for this project:
+* ```experiment_violin_major_chords.ipynb```: contains the analysis only for those samples of major chords played with the violin.
+* ```experiment_violin_all_chords.ipynb```: contains the analysis only for those samples played with the violin, regardless the chord type.
+* ```experiment_all_instruments.ipynb```: contains the analysis using the whole dataset.
 
-- Download wav files you want to process and add them to selected folder in _dataProcessing.py_ 
-- Run _dataProcessing.py_ 
-- Visualize in testing.ipynb
-- Download a soundfont to generate the chords using "wget ftp://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf2"
+
+
