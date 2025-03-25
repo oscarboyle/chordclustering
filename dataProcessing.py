@@ -78,7 +78,7 @@ if __name__ == '__main__':
     print(chroma.shape)
 
 
-def build_chord_templates():
+def build_chord_templates(chord_qualities=['Major', 'Minor']):
     """
     Build a dictionary of chord templates for major and minor triads
     across all roots (12 semitones).
