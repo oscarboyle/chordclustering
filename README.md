@@ -14,4 +14,8 @@ Three experiments have been run for this project:
 * ```experiment_all_instruments.ipynb```: contains the analysis using the whole dataset.
 
 
+## Interactive plots
+
+An interactive plot has been generated for each experiment. These can be visualized in the folder corresponding to each of the experiments, named as TSNE_GMM.html
+
 
